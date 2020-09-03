@@ -1,8 +1,9 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
+const MONGO_URI = process.env.MONGO_URI
 
 //Mongo connection
-mongoose.connect(process.env.MONGO_URI, 
+mongoose.connect(MONGO_URI, 
 {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -25,4 +26,4 @@ db.on("error", (err) =>
     console.log(`Database error \n ${err}`);
 });
 
-module.exports.Usser = require("./User");
+module.exports.User = require("./User");
