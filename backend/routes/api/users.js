@@ -19,7 +19,43 @@ router.get("/test", (req, res) =>
 //POST api/users/register
 router.post("/register", (req, res) =>
 {
+    User.findOne({email: req.body.email})
+    .then(user =>
+    {
+        //if email already exists, send a 404 response
+        if (user)
+        {
+            return res.status(400).json({msg: "Email already exists"});
+        }
+        else
+        {
+            //create a new user
+            const newUser = new User(
+            {
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password
+            });
 
+            //salt and hash the password, then save the user
+            bcrypt.genSalt(10, (error, salt) =>
+            {
+                bcrypt.hash(newUser.password, salt, (error, hash) =>
+                {
+                    if (error)
+                    {
+                        throw error;
+                    }
+
+                    //change the password to the hash
+                    newUser.password = hash;
+                    newUser.save()
+                    .then(createdUser => res.json(createdUser))
+                    .catch(err => console.log(err)); 
+                });
+            });
+        }
+    })
 });
 
 module.exports = router;

@@ -7,6 +7,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 const mongoose = require("mongoose");
 const { deserializeUser } = require('passport');
 const User = mongoose.model("User");
+const db = require("../models");
 
 //options is an object literal containing options to control how the token is extracted from the request or verified
 const options = {}
