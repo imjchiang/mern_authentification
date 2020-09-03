@@ -8,7 +8,8 @@ const passport = require("passport");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //load User model
-const User = require("../../models/User");
+// const User = require("../../models/User");
+const db = require("../../models");
 
 //GET api/users/test (Public)
 router.get("/test", (req, res) =>
@@ -56,6 +57,63 @@ router.post("/register", (req, res) =>
             });
         }
     })
+});
+
+//POST api/users/login (Public)
+router.post("/login", (req, res) =>
+{
+    const email = req.body.email;
+    const password = req.body.password;
+
+    //find a user via email
+    db.User.findOne({email})
+    .then(user =>
+    {
+        if (!user)
+        {
+            res.status(400).json({msg: "User not found"});
+        }
+        else
+        {
+            //check password with bcrypt
+            bcrypt.compare(password, user.password)
+            .then(isMatch =>
+            {
+                if (isMatch)
+                {
+                    //user match, send JSON web token
+                    //create a token payyload ( ou can include anything you want)
+                    const payload =
+                    {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email
+                    };
+
+                    //sign token
+                    jwt.sign(payload, JWT_SECRET, {expiresIn: 3600}, (error, token) =>
+                    {
+                        res.json({success: true, token: `Bearer ${token}`});
+                    });
+                }
+                else
+                {
+                    return res.status(400).json({password: "Password or email is incorrect"});
+                }
+            })
+        }
+    })
+});
+
+//GET api/users/cuurrent (Private)
+router.get("/current", passport.authenticate("jwt", {session: false}), (req, res) =>
+{
+    res.json(
+    {
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email
+    });
 });
 
 module.exports = router;
