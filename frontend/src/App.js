@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {Switch, Route, Redirect} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
-import Navbar from './components/Navbar';
 
+import Navbar from './components/Navbar';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import Profile from './components/Profile';
-
 import Welcome from './components/Welcome';
 import About from './components/About';
 import Footer from './components/Footer';
-import './index.css';
+
 import './App.css';
 
 const PrivateRoute = ({component: Component, ...rest}) =>
@@ -38,7 +37,7 @@ function App()
     }
     else
     {
-      token = jwt_decode(localStorage.getItem("jwt"));
+      token = jwt_decode(localStorage.getItem("jwtToken"));
       setAuthToken(localStorage.jwtToken);
       setCurrentUser(token);
       setIsAuthenticated(true);
@@ -47,7 +46,7 @@ function App()
 
   const nowCurrentUser = (userData) =>
   {
-    console.log("nowwCurrentUser is working...");
+    console.log("nowCurrentUser is working...");
     setCurrentUser(userData);
     setIsAuthenticated(true);
   };
@@ -73,10 +72,10 @@ function App()
           <Route path="/signup" component={Signup} />
           <Route 
             path="/login" 
-            render={(props) => <Login {...props} nowCurrentUser={nowCurrentUser} setIsAuthenticated={setIsAuthenticated} uer={currentUser} />} 
+            render={(props) => <Login {...props} nowCurrentUser={nowCurrentUser} setIsAuthenticated={setIsAuthenticated} user={currentUser} />} 
           />
           <Route path="/about" component={About} />
-          <PrivateRoute path="profile" component={Profile} user={currentUser} />
+          <PrivateRoute path="/profile" component={Profile} user={currentUser} />
           <Route exact path="/" component={Welcome} />
         </Switch>
       </div>
